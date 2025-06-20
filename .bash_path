@@ -1,0 +1,26 @@
+################################
+# Sourced by .bash_profile
+################################
+
+# On macos with homebrew we want to add any installed gnu utilities to our path.
+# Reference: https://github.com/pkill37/linuxify/
+
+brew_prefix=$(brew --prefix) 2> /dev/null
+
+if [[ -n $brew_prefix ]]; then
+    for dir in $(ls -1d "${brew_prefix}"/opt/*/libexec/gnubin 2>/dev/null); do
+        if [[ $dir != */gsed/* ]]; then
+            export PATH="$dir:$PATH";
+        fi
+    done
+    for dir in $(ls -1d "${brew_prefix}"/opt/*/libexec/gnuman 2>/dev/null); do
+        if [[ $dir != */gsed/* ]]; then
+            export MANPATH="$dir:$MANPATH"
+        fi
+    done
+fi
+unset brew_prefix
+
+if [ -d ${HOME}/bin ] ; then
+    export PATH="${HOME}/bin:${PATH}"
+fi
