@@ -4,7 +4,7 @@ Setup
 ```
 git clone https://github.com/yadm-dev/yadm.git ~/.yadm-project
 mkdir -p ${HOME}/bin
-ln -s ~/.yadm-project/yadm ~/bin/yadm
+ln -sf ~/.yadm-project/yadm ~/bin/yadm
 
 
 # Make sure ${HOME}/bin is in our path

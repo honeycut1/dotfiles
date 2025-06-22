@@ -1,3 +1,38 @@
 #!/bin/sh
+
 yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
+
+# Clone sub-repos
+# Each entry contains: URL BRANCH SUBDIRECTORY
+repos=(
+    "https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim"
+    "https://github.com/honeycut1/wezterm-config.git   johnh   .config/wezterm"
+)
+
+# Loop through each repository entry
+for entry in "${repos[@]}"; do
+    # Parse the entry into individual components
+    read -r url branch subdir <<< "$entry"
+
+    # Construct the full path
+    target_path="${HOME}/$subdir"
+
+    echo -e "\n================================================"
+    echo "Processing: $url"
+    echo "    Branch: $branch"
+    echo "    Target: $target_path"
+
+    # Clone the repository to the target directory
+    if [ ! -d "$target_path" ]; then
+        echo "Cloning $url to $target_path..."
+        git clone -b "$branch" "$url" "$target_path"
+        # Add a 'guthub' SSH remote.
+        ssh_url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
+        (set -x; cd "$target_path" && git remote add github "$ssh_url")
+    else
+        echo "Directory $target_path already exists, pulling latest changes..."
+        (set -x; cd "$target_path" && git checkout "$branch" && git pull --rebase)
+    fi
+done
+echo
 
