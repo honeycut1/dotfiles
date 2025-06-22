@@ -21,6 +21,11 @@ if [[ -n $brew_prefix ]]; then
 fi
 unset brew_prefix
 
+# rust & cargo
+if [ -d ~/.cargo/bin ] ; then
+    PATH=~/.cargo/bin:"${PATH}"
+fi
+
 if [ -d ${HOME}/.local/bin ] ; then
     export PATH="${HOME}/.local/bin:${PATH}"
 fi

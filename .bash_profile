@@ -3,6 +3,8 @@
 
 if [[ $(uname -s) == 'Darwin' ]]; then
     export IS_MACOS=1
+elif [[ $(uname -s) == 'Linux' ]]; then
+    export IS_LINUX=1
 fi
 
 if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -55,7 +57,6 @@ elif ! type _init_completion >/dev/null 2>&1; then
     fi
 fi
 
-
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh
 
@@ -68,3 +69,20 @@ if [[ -n $IS_MACOS ]]; then
     complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall
 fi
 
+if [[ -n $IS_LINUX ]]; then
+    export XDG_RUNTIME_DIR=/run/user/$(id -u)
+fi
+
+# Check for the 'keychain' command, if installed then use it to store SSH keys
+# and set the environment variables for the SSH_AUTH_SOCK and SSH_AGENT_PID
+# https://github.com/funtoo/keychain
+# Debian & EL package 'keychain'
+if command -v keychain > /dev/null; then
+    keys=()
+    for file in ~/.ssh/*; do
+        if [[ -f "$file" && -f "$file.pub" ]]; then
+            keys+=("$file")
+        fi
+    done
+    eval "$(keychain --eval --quiet "${keys[@]}")"
+fi
