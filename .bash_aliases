@@ -8,6 +8,8 @@ alias -- -="cd -"
 
 alias l='lsd'
 alias ll='l -l'
+
+alias l.='ls -d .* --color=auto'
 alias ls='ls -F --color=auto'
 alias lsa='ls -aF --color=auto'
 alias lsl='ls -l --color=auto'
@@ -26,7 +28,6 @@ alias path='echo -e ${PATH//:/\\n}'
 
 # git stuff
 alias gdiff='git diff --no-index'
-
 alias gl1s='git lg1'
 alias gl1sa='git lg1 --all'
 
