@@ -5,47 +5,46 @@
 #
 ##############################
 
-
 # Configure email & name in ~/.gitconfig.local
 # [user]
 #    email = "email"
 #    name = "name"
 
 [alias]
-        lg1 = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-        lg1s = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%<(70,trunc)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-        lg1ss = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%<(20,trunc)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
-        lg2  = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
-        lg2s  = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%<(70,trunc)%s%C(reset) %C(dim white)- %an%C(reset)'
+    lg1 = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+    lg1s = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%<(70,trunc)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+    lg1ss = log --graph --abbrev-commit --decorate --date=iso --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%<(20,trunc)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+    lg2  = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+    lg2s  = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%<(70,trunc)%s%C(reset) %C(dim white)- %an%C(reset)'
 
-        tree = "forest --pretty=format:\"%C(red)%h %C(magenta)(%ar) %C(blue)%an %C(reset)%s\" --style=15 --reverse"
+    tree = "forest --pretty=format:\"%C(red)%h %C(magenta)(%ar) %C(blue)%an %C(reset)%s\" --style=15 --reverse"
 
-	lg3  = log --graph --oneline --decorate
-        lgf = log --graph --oneline --decorate --name-status
+    lg3  = log --graph --oneline --decorate
+    lgf = log --graph --oneline --decorate --name-status
 
-        # See http://haacked.com/archive/2014/07/28/github-flow-aliases/
-        # 
-        st = status
-        co = checkout
-        ec = config --global -e
-	up = !git pull --rebase --prune $@ && git submodule update --init --recursive
-        cob = checkout -b
-        cm = !git add -A && git commit -m
-        wip = commit -am "WIP"
-        undo = reset HEAD~1 --mixed
-        amend = commit -a --amend
-        wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
-        cancel = reset --soft HEAD^
-        resetrepo = !git reset --hard && git clean -dfx
-	fpush = push --force-with-lease
-        
-	# from trevor bramble https://twitter.com/TrevorBramble/status/774292970681937920
- 	alias=!git config -l | grep ^alias | cut -c 7- | sort
+    # See http://haacked.com/archive/2014/07/28/github-flow-aliases/
+    # 
+    st = status
+    co = checkout
+    ec = config --global -e
+    up = !git pull --rebase --prune $@ && git submodule update --init --recursive
+    cob = checkout -b
+    cm = !git add -A && git commit -m
+    wip = commit -am "WIP"
+    undo = reset HEAD~1 --mixed
+    amend = commit -a --amend
+    wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
+    cancel = reset --soft HEAD^
+    resetrepo = !git reset --hard && git clean -dfx
+    fpush = push --force-with-lease
+
+    # from trevor bramble https://twitter.com/TrevorBramble/status/774292970681937920
+    alias=!git config -l | grep ^alias | cut -c 7- | sort
 
 [color]
-        ui = auto
+    ui = auto
 [core]
-        editor = vim
+    editor = vim
 
 #[diff]
 #    tool = meld
@@ -58,8 +57,8 @@
         default = simple
 
 [rerere]
-	enabled = true
-	autoUpdate = true
+    enabled = true
+    autoUpdate = true
 
 [include]
     path = ~/.gitconfig.local

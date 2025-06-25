@@ -1,6 +1,6 @@
-
-# ~/.bashrc: executed by bash(1) for non-login shells.
-
+#######################################################
+# ${HOME}/.bashrc: executed by bash(1) for non-login shells.
+#######################################################
 
 # If not running interactively, don't do anything
 case $- in
@@ -25,7 +25,6 @@ export EDITOR="$VISUAL"
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-
 # make less more friendly for non-text input files, see lesspipe(1)
 if which lesspipe &>/dev/null; then
     eval $(lesspipe)
@@ -40,8 +39,13 @@ esac
 
 if [ "$color_prompt" = yes ]; then
     if [[ ${EUID} == 0 ]] ; then
+        # We are root, set prompt to red
         PS1="\[\e[01;31m\]\h\[\e[01;34m\] \W \$\[\e[00m\] "
+    elif [[ -n $IS_LINUX && -n "$(ip netns id)" ]]; then
+	# We are in a net namespace, set UID in prompt to purple 
+        PS1="\[\e[01;35m\]\u@\h\[\e[00m\] \[\e[01;34m\]\w \$\[\e[00m\] "
     else
+        # Set it green
         PS1="\[\e[01;32m\]\u@\h\[\e[00m\] \[\e[01;34m\]\w \$\[\e[00m\] "
     fi
 else
@@ -51,20 +55,18 @@ unset color_prompt
 
 # enable color support of ls and also add handy aliases
 if which dircolors &>/dev/null; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)" 
-
-    alias ls='ls --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+    test -r ${HOME}/.dircolors && eval "$(dircolors -b ${HOME}/.dircolors)" || eval "$(dircolors -b)" 
 fi
 
 # Alias definitions.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+if [ -f ${HOME}/.bash_aliases ]; then
+    . ${HOME}/.bash_aliases
 fi
 
 # https://github.com/starship/starship
-if command -v starship > /dev/null; then
-    eval "$(starship init bash)"
+# You can set USE_STARSHIP=1 in ${HOME}/.bash_local
+if [ -n "$USE_STARSHIP" ]; then
+    if command -v starship > /dev/null; then
+        eval "$(starship init bash)"
+    fi
 fi

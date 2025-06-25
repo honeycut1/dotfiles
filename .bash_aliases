@@ -13,6 +13,10 @@ alias l.='ls -d .* --color=auto'
 alias ls='ls -F --color=auto'
 alias lsa='ls -aF --color=auto'
 alias lsl='ls -l --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
@@ -31,6 +35,11 @@ alias gdiff='git diff --no-index'
 alias gl1s='git lg1'
 alias gl1sa='git lg1 --all'
 
+alias ackv='ack --ignore-dir=.venv'
+
+alias xo='xdg-open'
+
+alias sagent-start='eval "$(ssh-agent -s)"'
 
 zimgitpush() { git add .; git commit -m "stuff"; git push $@; }
 
@@ -56,16 +65,53 @@ git-repos-cmd() {
 }
 
 # svn
-function svn-log { svn log $@ | sed '/^$/d' | sed 's/^------/\n------/'; }
+svn-log() { svn log $@ | sed '/^$/d' | sed 's/^------/\n------/'; }
 
 # Update path with mvn, java, ant tools
-function tools-setup { source ${HOME}/bin/add-paths.sh $@; }
+tools-setup() { source ${HOME}/bin/add-paths.sh $@; }
 
-alias sshstart='eval "$(ssh-agent -s)"'
+alias conky-restart='killall conky -SIGUSR1'
+
+### Open VS Code remote file or folder
+rcode-file() { code --remote ssh-remote+${1} $2; }
+rcode-dir()  { code --folder-uri vscode-remote://ssh-remote+${1}${2}; }
+
+# print stuff
+clp() { a2ps --medium=Letter -s1 -R --columns=1 --rows=2 --chars-per-line=132 "$@" -o - | lpr; }
+plp() { a2ps --medium=Letter -s2 "$@" -o - | lpr; }
+
 
 # zfs
 # ----
-function zfslist { zfs list -t all -o name,avail,used,usedsnap,usedds,usedrefreserv,usedchild,reservation,quota,refreservation,refquota -r "$@"; }
+zfslist() { zfs list -t all -o name,avail,used,usedsnap,usedds,usedrefreserv,usedchild,reservation,quota,refreservation,refquota -r "$@"; }
+zfsls1() { zfs list -t snapshot -o name,creation -s creation "$@"; }
+zfsls2() { zfs list -o name,avail,used,refer,written,usedsnap -r -t all "$@"; }
 
+# Misc
+# -----
+# Add an "alert" alias for long running commands.
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+# netns aliases
+alias boomaga-netns-killdbus="ps \$(ip netns pids ns1) | grep '[d]bus-launch' | awk '{print \$1;}' | xargs kill"
 
+# run-in-netns <namespace> <cmd> <parms> ...
+run-in-netns () 
+{
+    if [ "$#" -lt 2 ]; then
+       echo "Usage: ${FUNCNAME[0]} <netnns> <cmd> [parms] ..."
+       return 0
+    fi
+        
+    local _ns=$1;
+    shift;
+    if ! test -e "/var/run/netns/${_ns}" >/dev/null 2>&1; then
+        echo "Invalid netns: $_ns"
+        return 1
+    fi
+
+    sudo ip netns exec "$_ns" sudo -u "${USER}" "$@"
+}
+
+vns() { run-in-netns ns1 $@; }
+alias sns=vns
