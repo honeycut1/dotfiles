@@ -33,7 +33,7 @@ fi
 
 
 # rust & cargo
-add_to_path "${HOME}/.cargo/bin"
+[ -f "${HOME}/.cargo/env" ] && source "${HOME}/.cargo/env"
 
 # local bins
 add_to_path "${HOME}/.local/bin"
