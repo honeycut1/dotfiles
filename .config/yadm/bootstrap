@@ -4,36 +4,38 @@ yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
 
 # Clone sub-repos
 # Each entry contains: URL BRANCH SUBDIRECTORY
-repos=(
-    "https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim"
-    "https://github.com/honeycut1/wezterm-config.git   johnh   .config/wezterm"
-)
+repos='https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim
+https://github.com/honeycut1/wezterm-config.git   johnh   .config/wezterm'
 
-# Loop through each repository entry
-for entry in "${repos[@]}"; do
-    # Parse the entry into individual components
-    read -r url branch subdir <<< "$entry"
+# Process each repository entry
+echo "$repos" | while IFS= read -r entry; do
+    # Skip empty lines
+    [ -z "$entry" ] && continue
+    
+    # Parse the entry into individual components using set
+    set -- $entry
+    url="$1"
+    branch="$2"
+    subdir="$3"
 
     # Construct the full path
     target_path="${HOME}/$subdir"
 
-    echo -e "\n================================================"
-    echo "Processing: $url"
-    echo "    Branch: $branch"
-    echo "    Target: $target_path"
+    printf "\n================================================\n"
+    printf "Processing: %s\n" "$url"
+    printf "    Branch: %s\n" "$branch"
+    printf "    Target: %s\n" "$target_path"
 
     # Clone the repository to the target directory
     if [ ! -d "$target_path" ]; then
-        echo "Cloning $url to $target_path..."
+        printf "Cloning %s to %s...\n" "$url" "$target_path"
         git clone -b "$branch" "$url" "$target_path"
-        # Add a 'guthub' SSH remote.
+        # Add a 'github' SSH remote.
         ssh_url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
         (set -x; cd "$target_path" && git remote add github "$ssh_url")
     else
-        echo "Directory $target_path already exists, pulling latest changes..."
+        printf "Directory %s already exists, pulling latest changes...\n" "$target_path"
         (set -x; cd "$target_path" && git checkout "$branch" && git pull --rebase)
     fi
 done
-echo
-
 
