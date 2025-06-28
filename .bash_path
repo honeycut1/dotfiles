@@ -1,6 +1,7 @@
 ################################
 # Sourced by .bash_profile
 ################################
+[ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter
 
 # Helper function to add directory to PATH only if not already present
 add_to_path() {
@@ -40,3 +41,6 @@ add_to_path "${HOME}/.local/bin"
 add_to_path "${HOME}/bin"
 
 unset add_to_path add_to_manpath
+
+[ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} exit
+

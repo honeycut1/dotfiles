@@ -1,5 +1,6 @@
 # .bash_profile
 #echo "PATH=$PATH"
+[ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter
 
 if [[ $(uname -s) == 'Darwin' ]]; then
     export IS_MACOS=1
@@ -166,4 +167,6 @@ if [ -n "$USE_STARSHIP" ]; then
         eval "$(starship init bash)"
     fi
 fi
+
+[ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} exit
 
