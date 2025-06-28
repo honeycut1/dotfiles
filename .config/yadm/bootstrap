@@ -1,6 +1,6 @@
 #!/bin/sh
 
-yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
+#yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
 
 # Update the push url.
 ssh_url=$(yadm remote get-url origin | sed 's|https://github.com/|git@github.com:|')
