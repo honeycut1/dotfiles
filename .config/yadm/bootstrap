@@ -8,14 +8,14 @@ yadm remote set-url --push origin "$ssh_url"
 
 # Clone sub-repos
 # Each entry contains: URL BRANCH SUBDIRECTORY
-repos='https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim
+sub_repos='https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim
 https://github.com/honeycut1/wezterm-config.git   johnh  .config/wezterm
 https://github.com/tmux-plugins/tmux-logging      master .tmux/tmux-logging
 https://github.com/tmux-plugins/tmux-yank         master .tmux/tmux-yank'
 
 
 # Process each repository entry
-echo "$repos" | while IFS= read -r entry; do
+echo "$sub_repos" | while IFS= read -r entry; do
     # Skip empty lines
     [ -z "$entry" ] && continue
     
@@ -41,7 +41,16 @@ echo "$repos" | while IFS= read -r entry; do
         ssh_url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
         (set -x; cd "$target_path" && git remote set-url --push origin "$ssh_url")
     else
-        printf "Directory %s already exists, pulling latest changes...\n" "$target_path"
+        printf "Directory %s already exists, checking for changes...\n" "$target_path"
+
+        # Check for working or staged changes
+        if [ -n "$(cd "$target_path" && git status --porcelain 2>/dev/null)" ]; then
+            printf "WARNING: Repository has uncommitted changes. Skipping update.\n"
+            printf "Please commit or stash changes in %s before running bootstrap again.\n" "$target_path"
+            continue
+        fi
+
+        printf "No uncommitted changes found, pulling latest changes...\n"
         (set -x; cd "$target_path" && git checkout "$branch" && git pull --rebase)
     fi
 done
