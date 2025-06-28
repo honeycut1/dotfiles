@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# ANSI color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[0;33m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
 #yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
 
 # Update the push url.
@@ -28,15 +36,19 @@ echo "$sub_repos" | while IFS= read -r entry; do
     # Construct the full path
     target_path="${HOME}/$subdir"
 
-    printf "\n================================================\n"
-    printf "Processing: %s\n" "$url"
+    printf "\n${YELLOW}================================================${RESET}\n"
+    printf "${BOLD}Processing: %s${RESET}\n" "$url"
     printf "    Branch: %s\n" "$branch"
-    printf "    Target: %s\n" "$target_path"
+    printf "    ${YELLOW}Target: %s${RESET}\n" "$target_path"
 
     # Clone the repository to the target directory
     if [ ! -d "$target_path" ]; then
-        printf "Cloning %s to %s...\n" "$url" "$target_path"
+        printf "${CYAN}${BOLD}Cloning %s to %s...${RESET}\n" "$url" "$target_path"
         git clone -b "$branch" "$url" "$target_path"
+        if [ $? -eq 0 ]; then
+            printf "${GREEN}✓ Clone successful${RESET}\n"
+        fi
+
         # Update the push url.
         ssh_url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
         (set -x; cd "$target_path" && git remote set-url --push origin "$ssh_url")
@@ -45,13 +57,16 @@ echo "$sub_repos" | while IFS= read -r entry; do
 
         # Check for working or staged changes
         if [ -n "$(cd "$target_path" && git status --porcelain 2>/dev/null)" ]; then
-            printf "WARNING: Repository has uncommitted changes. Skipping update.\n"
-            printf "Please commit or stash changes in %s before running bootstrap again.\n" "$target_path"
+            printf "${RED}${BOLD}WARNING: Repository has uncommitted changes. Skipping update.${RESET}\n"
+            printf "${RED}Please commit or stash changes in %s before running bootstrap again.${RESET}\n" "$target_path"
             continue
         fi
 
-        printf "No uncommitted changes found, pulling latest changes...\n"
+        printf "${CYAN}No uncommitted changes found, pulling latest changes...${RESET}\n"
         (set -x; cd "$target_path" && git checkout "$branch" && git pull --rebase)
+        if [ $? -eq 0 ]; then
+            printf "${GREEN}✓ Update successful${RESET}\n"
+        fi
     fi
 done
 
