@@ -2,6 +2,10 @@
 
 yadm sparse-checkout set --no-cone '/*' '!README.md' '!LICENSE'
 
+# Update the push url.
+ssh_url=$(yadm remote get-url origin | sed 's|https://github.com/|git@github.com:|')
+yadm remote set-url --push origin "$ssh_url"
+
 # Clone sub-repos
 # Each entry contains: URL BRANCH SUBDIRECTORY
 repos='https://github.com/honeycut1/kickstart.nvim.git   johnh   .config/nvim
@@ -30,9 +34,9 @@ echo "$repos" | while IFS= read -r entry; do
     if [ ! -d "$target_path" ]; then
         printf "Cloning %s to %s...\n" "$url" "$target_path"
         git clone -b "$branch" "$url" "$target_path"
-        # Add a 'github' SSH remote.
+        # Update the push url.
         ssh_url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
-        (set -x; cd "$target_path" && git remote add github "$ssh_url")
+        (set -x; cd "$target_path" && git remote set-url --push origin "$ssh_url")
     else
         printf "Directory %s already exists, pulling latest changes...\n" "$target_path"
         (set -x; cd "$target_path" && git checkout "$branch" && git pull --rebase)
