@@ -46,7 +46,7 @@ echo "$sub_repos" | while IFS= read -r entry; do
         printf "${CYAN}${BOLD}Cloning %s to %s...${RESET}\n" "$url" "$target_path"
         git clone -b "$branch" "$url" "$target_path"
         if [ $? -eq 0 ]; then
-            printf "${GREEN}✓ Clone successful${RESET}\n"
+            printf "${GREEN}✓ Clone successful${RESET}\n\n"
         fi
 
         # Update the push url.
