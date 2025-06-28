@@ -5,15 +5,17 @@
 
 # Helper function to add directory to PATH only if not already present
 add_to_path() {
-    if [[ -d "$1" && ":$PATH:" != *":$1:"* ]]; then
-        export PATH="$1:$PATH"
+    local dir=${1%/} # Remove trailing /, if present
+    if [[ -d "$dir" && ":${PATH}:" != *":${dir}:"* ]]; then
+        export PATH="${dir}:${PATH}"
     fi
 }
 
 # Helper function to add directory to MANPATH only if not already present
 add_to_manpath() {
-    if [[ -d "$1" && ":$MANPATH:" != *":$1:"* ]]; then
-        export MANPATH="$1:$MANPATH"
+    local dir=${1%/} # Remove trailing /, if present
+    if [[ -d "${dir}" && ":${MANPATH}:" != *":${dir}:"* ]]; then
+        export MANPATH="${dir}:${MANPATH}"
     fi
 }
 
