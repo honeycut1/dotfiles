@@ -32,8 +32,12 @@ alias path='echo -e ${PATH//:/\\n}'
 
 # git stuff
 alias gdiff='git diff --no-index'
-alias gl1s='git lg1'
-alias gl1sa='git lg1 --all'
+alias gst='git status'
+alias gl1s='git lg1s -30'
+alias gl1ss='git lg1ss -30'
+alias gl1sa='git lg1s -30 --all'
+alias gl1ssa='git lg1ss -30 --all'
+alias ga='gl1ssa'
 
 alias ackv='ack --ignore-dir=.venv'
 
