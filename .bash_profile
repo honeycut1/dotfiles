@@ -87,14 +87,16 @@ fi
 # and set the environment variables for the SSH_AUTH_SOCK and SSH_AGENT_PID
 # https://github.com/funtoo/keychain
 # Debian & EL package 'keychain'
-if command -v keychain > /dev/null; then
-    keys=()
-    for file in ${HOME}/.ssh/*; do
-        if [[ -f "$file" && -f "$file.pub" ]]; then
-            keys+=("$file")
-        fi
-    done
-    eval "$(keychain --eval --quiet "${keys[@]}")"
+if [[ -n $START_KEYCHAIN ]]; then
+    if command -v keychain > /dev/null; then
+        keys=()
+        for file in ${home}/.ssh/*; do
+	    if [[ -f "$file" && -f "$file.pub" ]]; then
+	        keys+=("$file")
+	    fi
+        done
+        eval "$(keychain --eval --quiet "${keys[@]}")"
+    fi
 fi
 
 ####################################################
