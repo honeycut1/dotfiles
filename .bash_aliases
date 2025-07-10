@@ -39,6 +39,29 @@ alias gl1sa='git lg1s -30 --all'
 alias gl1ssa='git lg1ss -30 --all'
 alias ga='gl1ssa'
 
+gd() {
+  local git_opts=""
+  local delta_opts=""
+  local parsing_delta=false
+
+  # Parse arguments
+  for arg in "$@"; do
+    if [[ "$arg" == "--" ]]; then
+      parsing_delta=true
+      continue
+    fi
+    if [[ "$parsing_delta" == true ]]; then
+      delta_opts="$delta_opts $arg"
+    else
+      git_opts="$git_opts $arg"
+    fi
+  done
+
+  # Run the command
+  git diff $git_opts | d2 $delta_opts
+}
+
+
 alias ackv='ack --ignore-dir=.venv'
 
 alias xo='xdg-open'
