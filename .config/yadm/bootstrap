@@ -16,7 +16,7 @@ yadm remote set-url --push origin "$ssh_url"
 
 # Clone sub-repos
 # Each entry contains: URL BRANCH SUBDIRECTORY
-sub_repos='https://github.com/honeycut1/kickstart.nvim.git johnh  .config/nvim
+sub_repos='https://github.com/honeycut1/neovim-kickstart-config.git johnh  .config/nvim
 https://github.com/honeycut1/wezterm-config.git            johnh  .config/wezterm
 https://github.com/honeycut1/karabiner-windows-mode.git    johnh  .config/karabiner/karabiner-windows-mode
 https://github.com/tmux-plugins/tmux-logging               master .tmux/tmux-logging
