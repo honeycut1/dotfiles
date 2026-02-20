@@ -94,6 +94,10 @@ git-repos-cmd() {
 # svn
 svn-log() { svn log $@ | sed '/^$/d' | sed 's/^------/\n------/'; }
 
+# mac stuff
+alias ffp='/Applications/Firefox.app/Contents/MacOS/firefox --ProfileManager'
+alias jb='borders active_color=0xcff7768e inactive_color=0x9f7aa2f7 width=6.0'
+
 # Update path with mvn, java, ant tools
 tools-setup() { source ${HOME}/bin/add-paths.sh $@; }
 
