@@ -1,0 +1,225 @@
+#!/bin/bash
+
+###################################################
+# brew-linuxify.sh
+# Based off: https://github.com/pkill37/linuxify/
+#
+##################################################
+set -euo pipefail
+
+linuxify_check_os() {
+  if ! [[ "$OSTYPE" =~ darwin* ]]; then
+      echo "This is meant to be run on macOS only"
+      exit
+  fi
+}
+
+linuxify_check_brew() {
+  if ! command -v brew > /dev/null; then
+      echo "Homebrew not installed!"
+      echo "In order to use this script please install homebrew from https://brew.sh"
+      exit
+  fi
+}
+
+linuxify_set_prefix() {
+  export BREW_PREFIX="$(brew --prefix)"
+}
+
+linuxify_check_dirs() {
+    result=0
+    for dir in ${BREW_PREFIX}/bin ${BREW_PREFIX}/sbin; do
+        if [[ ! -d $dir || ! -w $dir ]]; then
+            echo "$dir must exist and be writeable"
+            result=1
+        fi
+    done
+
+    return $result
+}
+
+johnh_formulas=(
+    # Install GNU utilities (those that come with macOS are outdated).
+    # To avoid conflicts and options compatability issues with native tools such as ls, sed, find, ...
+    # the tools are installed with a 'g' prefix.
+    # See the below links for how to add non-'g' prefiexed version to PATH.
+    # https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+    # https://github.com/pkill37/linuxify
+    "coreutils"
+    "moreutils"
+    "findutils"
+    "gnu-sed"
+    "gnu-tar"
+    "grep"
+    "gawk"
+
+    "bash"
+    "bash-completion@2"
+
+    "binutils"
+    "diffutils"
+    "wget"
+    "gnupg"
+
+    # "openssh"
+    "ssh-copy-id"
+    "rsync"
+    "gnupg"
+
+    "vim"
+    "nvim"
+    "less"
+    "lesspipe"
+    "tmux"
+    "htop"
+    "btop"
+    "iftop"
+    "ncdu"
+    "duf"
+    "ack"
+    "fd"   #fd-find
+    "ripgrep"
+    "git"
+    # "git-lfs"
+    "git-delta"
+    "tig"
+    "lazygit"
+    "subversion"
+    "jq"
+    "shellcheck"
+    "gs"
+    "imagemagick"
+    "lua"
+    "lynx"
+    "lzop"
+    "p7zip"
+    "pigz"
+    "gzip"
+    "python@3.14" # 
+    "uv"       # python package manager
+    "pipx"     # python package manager
+    "snitch"   # network monitor
+    "fastfetch" # system info fetcher
+    "pv"
+    "rename"
+    "rlwrap"   # readline wrapper
+    "tree"
+    "lsd"      # enhanced ls
+    "jless"    # json viewer
+    "fx"       # json viewer
+    "jsonnet"  # jsonnet compiler
+    "vbindiff"
+    "yazi"     # File manager
+
+    "yadm"     # dotfile manager
+)
+formulas=("${johnh_formulas[@]}")
+echo "FormulaCount=${#formulas[@]}"
+
+linuxify_install() {
+
+    for (( i=0; i<${#formulas[@]}; i++ )); do
+        echo -e "\n----------------"
+        if brew ls --versions ${formulas[i]}; then
+            echo "Found Existing ${formulas[i]}"
+        else
+            echo "Installing ${formulas[i]}"
+            brew install ${formulas[i]}
+        fi
+    done
+
+    # Switch to using brew-installed bash as default shell
+    if ! fgrep -q "${BREW_PREFIX}/bin/bash" /etc/shells; then
+        read -p "Do you want to change your shell to the latest bash (Y/N)? " -n 1 -r reply
+        echo
+        if [[ $reply =~ [Yy]$ ]]; then
+            grep -qF "${BREW_PREFIX}/bin/bash" /etc/shells || echo "${BREW_PREFIX}/bin/bash" | sudo tee -a /etc/shells > /dev/null
+            echo # Blank line so the password entry isn't bunched-up
+            chsh -s ${BREW_PREFIX}/bin/bash
+        fi;
+    fi;
+}
+
+linuxify_uninstall() {
+
+    # Offer to change default shell back to macOS default
+    bash_is_local=false
+    if [[ $SHELL =~ local ]]; then
+        read -p "Do you want to change your shell back to macOS default (macOSVersion >= 10.15.x ? zsh : bash) ? " -n 1 -r reply
+        if [[ $reply =~ [Yy]$ ]]; then
+            sudo sed -i.bak "|${BREW_PREFIX}/bin/bash|d" /etc/shells && sudo rm /etc/shells.bak
+            echo
+            if [[ $(sw_vers -productVersion | awk -F. '{print $2}') -gt 14 ]]; then
+                chsh -s /bin/zsh
+            else
+                chsh -s /bin/bash
+            fi
+        else
+            echo "OK, leaving your shell as $SHELL"
+            if [[ $SHELL == ${BREW_PREFIX}/bin/bash ]]; then
+                bash_is_local=true
+            fi
+        fi
+    fi
+
+    # Uninstall all formulas in reverse order
+    for (( i=${#formulas[@]}-1; i>=0; i-- )); do
+        if [[ ${formulas[i]} != bash ]]; then
+            brew uninstall -f $(echo "${formulas[i]}" | cut -d ' ' -f1)
+        fi
+    done
+
+    # Only remove bash if the user didn't elect to keep it as their shell
+    if [[ "$bash_is_local" != true ]]; then
+        brew uninstall bash
+    fi
+}
+
+linuxify_info() {
+    for (( i=0; i<${#formulas[@]}; i++ )); do
+        brew info $(echo "${formulas[i]}" | cut -d ' ' -f1)
+        printf "\n\n===============================================================================================================================\n\n"
+    done
+}
+
+linuxify_help() {
+  echo "usage: $(basename $0) [-h] [command]";
+  echo ""
+  echo "valid commands:"
+  echo "  install    install GNU/Linux utilities"
+  echo "  uninstall  uninstall GNU/Linux utilities"
+  echo "  info       show info on GNU/Linux utilities"
+  echo ""
+  echo "optional arguments:"
+  echo "  -h, --help  show this help message and exit"
+}
+
+linuxify_main() {
+    linuxify_check_os;
+    linuxify_check_brew;
+    linuxify_set_prefix;
+    linuxify_check_dirs;
+
+    if [ $# -eq 1 ]; then
+        case $1 in
+            "install")
+                linuxify_install
+                ;;
+            "uninstall")
+                linuxify_uninstall
+                ;;
+            "info")
+                linuxify_info
+                ;;
+            "-h")
+                linuxify_help
+                ;;
+        esac
+    else
+        linuxify_help;
+        exit
+    fi
+}
+
+
+linuxify_main "$@"

@@ -7,7 +7,7 @@ defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
 # Reveal IP address, hostname, OS version, etc. when clicking the clock
 # in the login window
-sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo -string HostName
 
 # Disable automatic capitalization as it’s annoying when typing code
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
@@ -86,16 +86,21 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 
 
 # Show the ~/Library folder
-chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
+chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library 2>/dev/null || true
 
 # Show the /Volumes folder
 sudo chflags nohidden /Volumes
 
 # Disable window minimization genie effect
- defaults write com.apple.dock mineffect -string scale; killall Dock
+defaults write com.apple.dock mineffect -string scale
 
 # Minimize windows into their application’s icon
 defaults write com.apple.dock minimize-to-application -bool true
 
 # Show indicator lights for open applications in the Dock
 defaults write com.apple.dock show-process-indicators -bool true
+
+# Apply changes by restarting affected services
+killall Dock
+killall Finder
+killall SystemUIServer
