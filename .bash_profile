@@ -2,14 +2,14 @@
 #echo "PATH=$PATH"
 [ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter
 
+# Source global definitions (umask, PROMPT_COMMAND, and /etc/profile.d for non-login shells)
+[ -f /etc/bashrc ] && . /etc/bashrc
+
 if [[ $(uname -s) == 'Darwin' ]]; then
     export IS_MACOS=1
 elif [[ $(uname -s) == 'Linux' ]]; then
     export IS_LINUX=1
 fi
-
-# Case-insensitive globbing (used in pathname expansion)
-shopt -s nocaseglob
 
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend
@@ -90,12 +90,13 @@ fi
 if [[ -n $START_KEYCHAIN ]]; then
     if command -v keychain > /dev/null; then
         keys=()
-        for file in ${home}/.ssh/*; do
+        for file in ${HOME}/.ssh/*; do
 	    if [[ -f "$file" && -f "$file.pub" ]]; then
 	        keys+=("$file")
 	    fi
         done
         eval "$(keychain --eval --quiet "${keys[@]}")"
+        unset keys file
     fi
 fi
 

@@ -40,8 +40,8 @@ alias gl1ssa='git lg1ss -30 --all'
 alias ga='gl1ssa'
 
 gd() {
-  local git_opts=""
-  local delta_opts=""
+  local git_opts=()
+  local delta_opts=()
   local parsing_delta=false
 
   # Parse arguments
@@ -51,24 +51,24 @@ gd() {
       continue
     fi
     if [[ "$parsing_delta" == true ]]; then
-      delta_opts="$delta_opts $arg"
+      delta_opts+=("$arg")
     else
-      git_opts="$git_opts $arg"
+      git_opts+=("$arg")
     fi
   done
 
   # Run the command
-  git diff $git_opts | d2 $delta_opts
+  git diff "${git_opts[@]}" | d2 "${delta_opts[@]}"
 }
 
-
-alias ackv='ack --ignore-dir=.venv'
+alias ssf='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias ackv='ack --ignore-dir=.venv --ignore-dir=.venv-ansible'
 
 alias xo='xdg-open'
 
 alias sagent-start='eval "$(ssh-agent -s)"'
 
-zimgitpush() { git add .; git commit -m "stuff"; git push $@; }
+zimgitpush() { git add .; git commit -m "stuff"; git push "$@"; }
 
 git-repos-cmd() {
   # Check if a command is provided
@@ -92,14 +92,14 @@ git-repos-cmd() {
 }
 
 # svn
-svn-log() { svn log $@ | sed '/^$/d' | sed 's/^------/\n------/'; }
+svn-log() { svn log "$@" | sed '/^$/d' | sed 's/^------/\n------/'; }
 
 # mac stuff
 alias ffp='/Applications/Firefox.app/Contents/MacOS/firefox --ProfileManager'
 alias jb='borders active_color=0xcff7768e inactive_color=0x9f7aa2f7 width=6.0'
 
 # Update path with mvn, java, ant tools
-tools-setup() { source ${HOME}/bin/add-paths.sh $@; }
+tools-setup() { source ${HOME}/bin/mvn-tools-setup.sh $@; }
 
 alias conky-restart='killall conky -SIGUSR1'
 
@@ -144,5 +144,5 @@ run-in-netns ()
     sudo ip netns exec "$_ns" sudo -u "${USER}" "$@"
 }
 
-vns() { run-in-netns ns1 $@; }
+vns() { run-in-netns ns1 "$@"; }
 alias sns=vns
