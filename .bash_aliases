@@ -68,6 +68,8 @@ alias xo='xdg-open'
 
 alias sagent-start='eval "$(ssh-agent -s)"'
 
+alias ssh-proxy-1081='ssh -D 1081'
+
 zimgitpush() { git add .; git commit -m "stuff"; git push "$@"; }
 
 git-repos-cmd() {
@@ -106,6 +108,8 @@ alias conky-restart='killall conky -SIGUSR1'
 ### Open VS Code remote file or folder
 rcode-file() { code --remote ssh-remote+${1} $2; }
 rcode-dir()  { code --folder-uri vscode-remote://ssh-remote+${1}${2}; }
+
+alias openwebui="DATA_DIR=~/.open-webui open-webui serve"
 
 # print stuff
 clp() { a2ps --medium=Letter -s1 -R --columns=1 --rows=2 --chars-per-line=132 "$@" -o - | lpr; }
