@@ -3,12 +3,16 @@
 ################################
 [ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter
 
-# Helper function to add directory to PATH only if not already present
+# Helper function to move/add directory to the front of PATH.
+# Moving (not skipping) matters on macOS: path_helper in /etc/profile pushes
+# inherited entries behind /usr/bin in nested login shells (tmux, bash -l).
 add_to_path() {
     local dir=${1%/} # Remove trailing /, if present
-    if [[ -d "$dir" && ":${PATH}:" != *":${dir}:"* ]]; then
-        export PATH="${dir}:${PATH}"
-    fi
+    [[ -d "$dir" ]] || return
+    local p=":${PATH}:"
+    p=${p//:${dir}:/:}
+    p=${p#:}; p=${p%:}
+    export PATH="${dir}${p:+:${p}}"
 }
 
 # Helper function to add directory to MANPATH only if not already present
