@@ -2,6 +2,14 @@
 # ${HOME}/.bashrc: executed by bash(1) for interactive non-login shells,
 # for non-interactive ssh commands, and via .bash_profile for login shells.
 # Environment first, then return if not interactive.
+#
+# Which shells reach this file:
+#   gnome-terminal and most Linux terminals: non-login, so they come straight here.
+#   WezTerm (any OS), macOS Terminal/iTerm2, tmux, ssh logins: login, via .bash_profile.
+#   /etc/bashrc: RHEL and macOS have it, Ubuntu/Mint don't (bash reads
+#   /etc/bash.bashrc there instead). On macOS, a login shell has already sourced
+#   it from /etc/profile, so sourcing it again below is harmless.
+# Platform matrix: see the header of .bash_profile.
 #######################################################
 
 [ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter

@@ -1,5 +1,12 @@
 ################################
-# Sourced by .bash_profile
+# Sourced by .bashrc for every shell, interactive or not, including nested ones.
+# So everything here must be idempotent: re-running must not duplicate PATH entries.
+# PATH arriving here:
+#   macOS: path_helper (/etc/paths, /etc/paths.d), then brew shellenv in .bashrc
+#   RHEL:  /etc/profile pathmunge + /etc/profile.d. Skel's ~/.local/bin:~/bin isn't
+#          used because our .bash_profile replaces skel's.
+#   Debian-family: /etc/environment (pam_env), /etc/profile; Ubuntu skel .profile adds
+#          ~/bin and ~/.local/bin, but bash skips .profile, so we add them here.
 ################################
 [ -f ~/.trace.sh ] && . ~/.trace.sh && log_startup ${BASH_SOURCE[0]} enter
 
